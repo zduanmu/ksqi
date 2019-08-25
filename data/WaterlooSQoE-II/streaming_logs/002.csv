@@ -1,0 +1,3 @@
+representation_index,rebuffering_duration,video_bitrate,chunk_duration,qp,framerate,width,height,is_best,mvm,mos,psnr,ssim,msssim,vqm,strred,vmaf,ssimplus
+0,0.0,155.34,4.0,48.0,30.0,1920.0,1080.0,0,0.016,39.589,29.217,0.945,0.944,0.68,46.881,53.563,63.708
+1,0.0,471.852,4.0,40.0,30.0,1920.0,1080.0,0,0.016,87.196,34.584,0.984,0.982,0.439,18.554,77.739,83.475

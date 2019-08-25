@@ -1,0 +1,10 @@
+F-Test,FTW,Mok2011QoE,Liu2012QoE,Yin2015QoE,Bentelab2016QoE,SQI,P1203,VideoATLAS,KSQI
+FTW,-,-,0,-,1,0,-,-,0
+Mok2011QoE,-,-,0,-,1,0,-,-,0
+Liu2012QoE,1,1,-,1,1,-,1,1,-
+Yin2015QoE,-,-,0,-,1,0,-,-,0
+Bentelab2016QoE,0,0,0,0,-,0,0,0,0
+SQI,1,1,-,1,1,-,1,1,-
+P1203,-,-,0,-,1,0,-,-,0
+VideoATLAS,-,-,0,-,1,0,-,-,0
+KSQI,1,1,-,1,1,-,1,1,-

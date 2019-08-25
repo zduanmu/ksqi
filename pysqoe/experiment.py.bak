@@ -1,0 +1,80 @@
+import os
+import numpy as np
+import pandas as pd
+from pysqoe.models import get_qoe_model
+from pysqoe.evaluation import get_criterion, get_comparison_method
+
+
+class Experiment(object):
+    def __init__(self, models, criteria, model_comparison=None, plot=True):
+        self.model_names = models.split(':')
+        self.models = [get_qoe_model(model_name) for model_name in self.model_names]
+        self.crit_names = criteria.split(':')
+        self.criteria = [get_criterion(crit_name) for crit_name in self.crit_names]
+        self.result_dir = os.path.abspath(os.path.join(os.path.abspath(''), 'results'))
+        self.comparison_methods = None
+        if model_comparison != '':
+            self.comparison_names = model_comparison.split(':')
+            self.comparison_methods = [get_comparison_method(mc_method) for mc_method in self.comparison_names]
+
+    def __call__(self, dataset):
+        # create output folders
+        result_dir = os.path.join(self.result_dir, dataset.name)
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+        score_out = os.path.join(result_dir, 'scores.csv')
+        criteria_out = os.path.join(result_dir, 'performance.csv')
+        mc_out = None if self.comparison_methods is None else os.path.join(result_dir, 'model_comparison.csv')
+        
+        # record score_out header
+        row = ['streaming_log'] + self.model_names
+        row = ','.join(row)
+        self._record(row=row, out=score_out, mode='w')
+        # perform objective QoE assessment
+        sbj_score = []
+        for i in range(len(dataset)):
+            streaming_video, mos = dataset[i]
+            sbj_score.append(mos)
+            # compute objective QoE
+            obj_score = [str(np.around(model(streaming_video), decimals=3)) for model in self.models]
+            # record results to csv
+            row = [streaming_video.get_video_name()] + obj_score
+            row = ','.join(row)
+            self._record(row=row, out=score_out)
+        print('The objective QoE scores are recorded in %s.' % score_out)
+        df = pd.read_csv(score_out)
+        score_dict = df.to_dict(orient='list')
+
+        # record criteria_out header
+        row = ['qoe_model'] + self.crit_names
+        row = ','.join(row)
+        self._record(row=row, out=criteria_out, mode='w')
+        # perform objective QoE model evaluation
+        for model in self.model_names:
+            performance = [str(np.around(criterion(obj_score=score_dict[model], sbj_score=sbj_score),
+                           decimals=3)) for criterion in self.criteria]
+            row = [model] + performance
+            row = ','.join(row)
+            self._record(row=row, out=criteria_out)
+        print('The performance of the objective QoE models is recorded in %s.' % criteria_out)
+
+        # record stats_out header
+        if self.comparison_methods is not None:
+            for mc_name, mc_method in zip(self.comparison_names, self.comparison_methods):
+                row = [mc_name] + self.model_names
+                row = ','.join(row)
+                self._record(row=row, out=mc_out)
+                for x1 in self.model_names: 
+                    performance = [mc_method(x1=score_dict[x1], x2=score_dict[x2], sbj_score=sbj_score) for x2 in self.model_names]
+                    row = [x1] + performance
+                    row = ','.join(row)
+                    self._record(row=row, out=mc_out)
+                    
+            print('The model comparison results are recorded in %s.' % mc_out)
+
+        print('Testing is completed.')
+
+    def _record(self, row, out, mode='a+'):
+        if out is not None:
+            with open(file=out, mode=mode) as f:
+                f.write(row + '\n')
