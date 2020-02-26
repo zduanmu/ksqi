@@ -38,7 +38,7 @@ class WaterlooSQoE1(StreamingDatabase):
                 print('WaterlooSQoE-I already downloaded.')
                 return
         
-        url = 'https://ivc.uwaterloo.ca/database/WaterlooSQoE/'
+        url = 'http://ivc.uwaterloo.ca/database/WaterlooSQoE-I/'
         if version == 'full':
             filename = 'waterloo_sqoe_full.zip'
             url += filename

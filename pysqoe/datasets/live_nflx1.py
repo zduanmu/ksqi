@@ -38,7 +38,7 @@ class LIVENFLX1(StreamingDatabase):
                 print('LIVE-NFLX-I already downloaded.')
                 return
         
-        url = 'https://ivc.uwaterloo.ca/database/LIVENFLX1/'
+        url = 'http://ivc.uwaterloo.ca/database/LIVENFLX1/'
         filename = 'live_nflx1_feature.zip'
         url += filename
 
